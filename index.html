@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gnextdoor Cheer Jar</title>
+    <style>
+        /* Basic reset and body styling for mobile-first, cozy design */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif; /* Friendly typography */
+            background-color: #f0e6ff; /* Soft pastel background */
+            color: #5a4a7a; /* Soft text color */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Title and subtitle styling */
+        .title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #7b68ee; /* Pastel purple */
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #a8a2d1; /* Lighter pastel */
+        }
+
+        /* Jar styling - simple CSS-drawn jar */
+        .jar {
+            width: 150px;
+            height: 200px;
+            background-color: #e6e6fa; /* Light lavender */
+            border-radius: 20px 20px 50px 50px; /* Rounded bottom for jar shape */
+            border: 5px solid #d8d8ff; /* Soft border */
+            position: relative;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .jar::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 20px;
+            background-color: #e6e6fa;
+            border-radius: 10px;
+            border: 5px solid #d8d8ff;
+        }
+
+        /* Shake animation for the jar */
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Button styling */
+        .shake-btn {
+            background-color: #ffb6c1; /* Light pink */
+            color: #5a4a7a;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 25px; /* Rounded */
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .shake-btn:hover {
+            background-color: #ffcccc; /* Slightly darker pink on hover */
+        }
+
+        /* Message display styling - speech bubble */
+        .message {
+            display: none; /* Hidden initially */
+            background-color: #fffacd; /* Light yellow */
+            border: 3px solid #ffe4b5; /* Soft border */
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 300px;
+            text-align: center;
+            font-size: 1.1rem;
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message.show {
+            display: block;
+            opacity: 1;
+        }
+        .message::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 15px solid #fffacd; /* Speech bubble tail */
+        }
+
+        /* Footer styling */
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #a8a2d1;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">gnextdoor Cheer Jar</h1>
+        <p class="subtitle">From fans, for fans 💙</p>
+        <div class="jar" id="jar"></div>
+        <button class="shake-btn" id="shakeBtn">Shake the Jar</button>
+        <div class="message" id="message"></div>
+        <div class="footer">by gnextdoor_id – from fans to fans 🤍</div>
+    </div>
+
+    <script>
+        // Array of encouraging messages in Indonesian (at least 15-20)
+        const messages = [
+            "Hari ini capek gapapa, kamu udah berusaha 🤍",
+            "Pelan-pelan juga tetap jalan, semangat ya!",
+            "Kalau kamu lagi ragu, ingat kamu nggak sendirian.",
+            "Terima kasih sudah bertahan hari ini.",
+            "Istirahat juga bagian dari berjuang.",
+            "Kamu cukup, apa adanya.",
+            "Semangat terus, kita semua bangga sama kamu!",
+            "Jangan lupa senyum hari ini, ya!",
+            "Kamu hebat, meski kadang nggak terasa.",
+            "Peluk virtual dari fans: kamu keren!",
+            "Langkah kecilmu hari ini sangat berarti.",
+            "Jika hari ini sulit, besok pasti lebih baik.",
+            "Kamu inspirasi bagi banyak orang.",
+            "Teruslah bermimpi, kita dukung kamu!",
+            "Apa pun yang terjadi, kamu nggak sendiri.",
+            "Semangat untuk hari esok, ya!",
+            "Kamu sudah melakukan yang terbaik.",
+            "Ingat, setiap hari adalah kesempatan baru.",
+            "Kamu layak mendapat kebahagiaan.",
+            "Dari fans ke fans: kamu luar biasa!"
+        ];
+
+        // Get elements
+        const jar = document.getElementById('jar');
+        const shakeBtn = document.getElementById('shakeBtn');
+        const messageDiv = document.getElementById('message');
+
+        // Function to shake the jar and show a random message
+        shakeBtn.addEventListener('click', () => {
+            // Add shake class to jar for animation
+            jar.classList.add('shake');
+            
+            // Remove shake class after animation ends
+            setTimeout(() => {
+                jar.classList.remove('shake');
+                
+                // Pick a random message
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                
+                // Display the message with fade-in
+                messageDiv.textContent = randomMessage;
+                messageDiv.classList.add('show');
+            }, 500); // Match animation duration
+        });
+    </script>
+</body>
+</html>
